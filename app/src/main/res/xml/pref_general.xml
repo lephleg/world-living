@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ListPreference
+        android:dependency="pref_sync"
+        android:key="pref_syncConnectionType"
+        android:title="@string/pref_currency_title"
+        android:entries="@array/pref_currency_entries"
+        android:entryValues="@array/pref_currency_values"/>
+
+</PreferenceScreen>
