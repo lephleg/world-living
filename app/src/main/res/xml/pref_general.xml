@@ -2,8 +2,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <ListPreference
-        android:dependency="pref_sync"
-        android:key="pref_syncConnectionType"
+        android:key="@string/pref_currency_key"
         android:title="@string/pref_currency_title"
         android:entries="@array/pref_currency_entries"
         android:entryValues="@array/pref_currency_values"/>
