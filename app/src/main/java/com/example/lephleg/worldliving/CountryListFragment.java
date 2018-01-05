@@ -2,7 +2,6 @@ package com.example.lephleg.worldliving;
 
 import android.app.Fragment;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -11,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class CountryListFragment extends Fragment {
 
@@ -42,10 +40,6 @@ public class CountryListFragment extends Fragment {
 
         ListView list = (ListView) rootView.findViewById(R.id.country_listview);
         list.setAdapter(listAdapter);
-
-
-//        Log.d(LOG_TAG, Arrays.toString(countryList));
-
 
         return rootView;
     }
