@@ -4,6 +4,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.example.lephleg.worldliving.data.Country;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,7 +37,7 @@ public class FetchCountryDataTask extends AsyncTask<Country, Void, String[]> {
         String apiKey = "c2p5s2nxe3bulq";
         String country = params[0].code;
         // TODO: Fetch currency from preferences
-        String currency = "usd";
+        String currency = "USD";
 
         try {
 

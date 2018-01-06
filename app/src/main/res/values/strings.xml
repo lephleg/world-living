@@ -6,5 +6,6 @@
     <string name="action_settings">Settings</string>
     <string name="pref_currency_title">Preferred Currency</string>
     <string name="pref_currency_key" translatable="false">currency</string>
+    <string name="action_share">Share</string>
 
 </resources>

@@ -10,6 +10,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.lephleg.worldliving.data.Country;
+
 import java.util.ArrayList;
 
 public class CountriesAdapter extends ArrayAdapter<Country> {

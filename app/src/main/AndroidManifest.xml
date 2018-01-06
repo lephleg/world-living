@@ -3,7 +3,7 @@
     package="com.example.lephleg.worldliving">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -11,6 +11,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <activity android:name=".MainActivity">
 
             <meta-data android:name="@string/search_label"
@@ -22,9 +23,13 @@
             </intent-filter>
 
         </activity>
-        <activity android:name=".SettingsActivity">
 
+        <activity android:name=".DetailActivity">
         </activity>
+
+        <activity android:name=".SettingsActivity">
+        </activity>
+
     </application>
 
 </manifest>
