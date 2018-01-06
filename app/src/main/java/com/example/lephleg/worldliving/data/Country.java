@@ -1,13 +1,17 @@
-package com.example.lephleg.worldliving;
+package com.example.lephleg.worldliving.data;
 
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import com.example.lephleg.worldliving.R;
 
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class Country {
+public class Country implements Parcelable{
 
     public String name;
     public String code;
@@ -17,6 +21,13 @@ public class Country {
             this.name = name;
             this.code = code;
         }
+
+    // example constructor that takes a Parcel and gives you an object populated with it's values
+    private Country(Parcel in) {
+        this.name = in.readString();
+        this.code = in.readString();
+        this.flag = in.readInt();
+    }
 
     public void loadFlagByCode(Context context) {
 
@@ -51,5 +62,27 @@ public class Country {
 
         return countries;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+            parcel.writeString(this.name);
+            parcel.writeString(this.code);
+            parcel.writeInt(this.flag);
+    }
+
+    public static final Parcelable.Creator<Country> CREATOR = new Parcelable.Creator<Country>() {
+        public Country createFromParcel(Parcel in) {
+            return new Country(in);
+        }
+
+        public Country[] newArray(int size) {
+            return new Country[size];
+        }
+    };
 
 }
