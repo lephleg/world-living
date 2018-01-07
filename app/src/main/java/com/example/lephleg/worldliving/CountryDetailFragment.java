@@ -1,5 +1,6 @@
 package com.example.lephleg.worldliving;
 
+import android.app.Activity;
 import android.support.v4.app.Fragment;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -23,6 +25,7 @@ public class CountryDetailFragment extends Fragment implements LoaderManager.Loa
     private static final String LOG_TAG = CountryDetailFragment.class.getSimpleName();
     private ShareActionProvider mShareActionProvider;
     private Country mCountry;
+    private PriceListAdapter mExpListAdapter;
 
     public CountryDetailFragment() {
         setHasOptionsMenu(true);
@@ -44,8 +47,11 @@ public class CountryDetailFragment extends Fragment implements LoaderManager.Loa
         TextView name = (TextView) rootView.findViewById(R.id.detail_country_name);
         name.setText(mCountry.name);
 
-        FetchCountryDataTask dataTask = new FetchCountryDataTask();
-        dataTask.execute(mCountry);
+//        PriceListAdapter adapter = new PriceListAdapter(getActivity(),null,null);
+//
+//        ExpandableListView expandableListView = (ExpandableListView) rootView.findViewById(R.id.detail_country_exp_list);
+
+        (new FetchCountryDataTask(getActivity())).execute(mCountry);
 
         return rootView;
     }

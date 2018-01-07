@@ -1,21 +1,51 @@
 package com.example.lephleg.worldliving;
 
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.ExpandableListAdapter;
+import android.widget.ExpandableListView;
 
 import com.example.lephleg.worldliving.data.Country;
+import com.example.lephleg.worldliving.data.PriceItem;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class FetchCountryDataTask extends AsyncTask<Country, Void, String[]> {
 
     private final String LOG_TAG = FetchCountryDataTask.class.getSimpleName();
+    private WeakReference<Activity> mActivity;
+    private ExpandableListAdapter mAdapter;
+    private List<String> listDataHeader;
+    private HashMap<String, List<PriceItem>> listDataChild = new HashMap<String, List<PriceItem>>();
+    private ProgressDialog dialog;
+
+
+    public FetchCountryDataTask(Activity activity) {
+        mActivity = new WeakReference<>(activity);
+        dialog = new ProgressDialog(activity);
+    }
+
+    @Override
+    protected void onPreExecute() {
+        this.dialog.setMessage("Loading data...");
+        this.dialog.show();
+    }
 
     @Override
     protected String[] doInBackground(Country... params) {
@@ -35,7 +65,7 @@ public class FetchCountryDataTask extends AsyncTask<Country, Void, String[]> {
 
         // TODO: Store key to gradle build
         String apiKey = "c2p5s2nxe3bulq";
-        String country = params[0].code;
+        Country country = params[0];
         // TODO: Fetch currency from preferences
         String currency = "USD";
 
@@ -49,7 +79,7 @@ public class FetchCountryDataTask extends AsyncTask<Country, Void, String[]> {
 
             Uri builtUri = Uri.parse(API_BASE_URL).buildUpon()
                     .appendQueryParameter(API_KEY_PARAM, apiKey)
-                    .appendQueryParameter(COUNTRY_PARAM, country)
+                    .appendQueryParameter(COUNTRY_PARAM, country.code)
                     .appendQueryParameter(CURRENCY_PARAM, currency)
                     .build();
 
@@ -99,10 +129,114 @@ public class FetchCountryDataTask extends AsyncTask<Country, Void, String[]> {
             }
         }
 
-        Log.d(LOG_TAG, dataJsonStr);
+        try {
+            // Instantiate a JSON object from the request response
+            JSONObject jsonObject = new JSONObject(dataJsonStr);
+            JSONArray priceItems = jsonObject.getJSONArray("prices");
+
+            List<PriceItem> items = new ArrayList<PriceItem>();
+            Log.d(LOG_TAG, "Parsing values for " + country.name + "...");
+
+            for (int i = 0; i < priceItems.length(); i++) {
+
+                JSONObject item = priceItems.getJSONObject(i);
+                int itemId = item.getInt("item_id");
+
+                PriceItem itemListed = PriceItem.getPriceItemById(itemId);
+
+                if (itemListed != null) {
+                    itemListed.avgPrice = item.getDouble("average_price");
+                    items.add(itemListed);
+//                    Log.d(LOG_TAG, "Item found: " + itemListed.name + " - " + itemListed.avgPrice);
+                }
+            }
+            Log.d(LOG_TAG, "Total items found: " + items.size());
+
+            formatPriceItems(items);
+
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Error parsing json object", e);
+        }
 
         // This will only happen if there was an error getting or parsing the forecast.
         return null;
     }
 
+    @Override
+    protected void onPostExecute(String[] strings) {
+
+        mAdapter = new PriceListAdapter(mActivity.get(), listDataHeader, listDataChild);
+
+        ExpandableListView expListView = (ExpandableListView) mActivity.get().findViewById(R.id.detail_country_exp_list);
+        expListView.setAdapter(mAdapter);
+
+        // dismiss the dialog
+        if (dialog.isShowing()) {
+            dialog.dismiss();
+        }
+
+    }
+
+    private void formatPriceItems(List<PriceItem> items) {
+
+        List<PriceItem> restaurants = new ArrayList<PriceItem>();
+        List<PriceItem> markets = new ArrayList<PriceItem>();
+        List<PriceItem> transportation = new ArrayList<PriceItem>();
+        List<PriceItem> utilities = new ArrayList<PriceItem>();
+        List<PriceItem> leisure = new ArrayList<PriceItem>();
+        List<PriceItem> rent = new ArrayList<PriceItem>();
+        List<PriceItem> earnings = new ArrayList<PriceItem>();
+
+        for (PriceItem i : items) {
+            switch (i.groupId) {
+                case 1:
+                    restaurants.add(i);
+                    break;
+                case 2:
+                    markets.add(i);
+                    break;
+                case 3:
+                    transportation.add(i);
+                    break;
+                case 4:
+                    utilities.add(i);
+                    break;
+                case 5:
+                    leisure.add(i);
+                    break;
+                case 6:
+                    rent.add(i);
+                    break;
+                case 7:
+                    earnings.add(i);
+                    break;
+            }
+        }
+
+        Resources resources = mActivity.get().getResources();
+
+        if (restaurants.size() > 0) {
+            listDataChild.put(resources.getString(R.string.restaurants_item_group_label), restaurants);
+        }
+        if (markets.size() > 0) {
+            listDataChild.put(resources.getString(R.string.markets_item_group_label), markets);
+        }
+        if (transportation.size() > 0) {
+            listDataChild.put(resources.getString(R.string.transportation_item_group_label), transportation);
+        }
+        if (utilities.size() > 0) {
+            listDataChild.put(resources.getString(R.string.utilities_item_group_label), utilities);
+        }
+        if (leisure.size() > 0) {
+            listDataChild.put(resources.getString(R.string.leisure_item_group_label), leisure);
+        }
+        if (rent.size() > 0) {
+            listDataChild.put(resources.getString(R.string.rent_item_group_label), rent);
+        }
+        if (earnings.size() > 0) {
+            listDataChild.put(resources.getString(R.string.earnings_item_group_label), earnings);
+        }
+
+        listDataHeader = new ArrayList<String>(listDataChild.keySet());
+    }
 }

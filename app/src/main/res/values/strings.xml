@@ -8,4 +8,12 @@
     <string name="pref_currency_key" translatable="false">currency</string>
     <string name="action_share">Share</string>
 
+    <string name="restaurants_item_group_label">Restaurants</string>
+    <string name="markets_item_group_label">Markets</string>
+    <string name="transportation_item_group_label">Transportation</string>
+    <string name="utilities_item_group_label">Utilities</string>
+    <string name="leisure_item_group_label">Leisure</string>
+    <string name="rent_item_group_label">Rent</string>
+    <string name="earnings_item_group_label">Earnings</string>
+
 </resources>
