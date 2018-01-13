@@ -1,6 +1,8 @@
 package com.example.lephleg.worldliving;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -65,6 +67,34 @@ public class CountryDetailFragment extends Fragment implements LoaderManager.Loa
         MenuItem menuItem = menu.findItem(R.id.action_share);
 
         // TODO: share functionality
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+
+        if (id == R.id.action_map) {
+            openCountryInMap();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void openCountryInMap() {
+
+        Uri geoLocation = Uri.parse("geo:0,0?q=" + mCountry.name);
+
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(geoLocation);
+
+        if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+            startActivity(intent);
+        } else {
+            Log.d(LOG_TAG, "Couldn't call " + geoLocation.toString() + ", no receiving apps installed!");
+        }
 
     }
 

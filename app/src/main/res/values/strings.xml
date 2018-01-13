@@ -19,6 +19,7 @@
 
 
     <string name="action_share">Share</string>
+    <string name="action_map">Map</string>
 
     <string name="restaurants_item_group_label">Restaurants</string>
     <string name="markets_item_group_label">Markets</string>
