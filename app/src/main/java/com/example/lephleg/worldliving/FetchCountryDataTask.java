@@ -63,8 +63,7 @@ public class FetchCountryDataTask extends AsyncTask<Country, Void, String[]> {
         // Will contain the raw JSON response as a string.
         String dataJsonStr = null;
 
-        // TODO: Store key to gradle build
-        String apiKey = "c2p5s2nxe3bulq";
+        String apiKey = BuildConfig.NUMBEO_API_KEY;
         Country country = params[0];
         // TODO: Fetch currency from preferences
         String currency = "USD";
