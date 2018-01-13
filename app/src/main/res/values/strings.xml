@@ -33,4 +33,7 @@
     <string name="eur_price" translatable="false">€<xliff:g id="price">%1.2f</xliff:g></string>
     <string name="gbp_price" translatable="false">£<xliff:g id="price">%1.2f</xliff:g></string>
 
+    <string name="share_text">Hey! I\'m checking cost of living for <xliff:g id="country">%s</xliff:g> with World Living app!</string>
+
+
 </resources>
