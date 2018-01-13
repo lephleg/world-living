@@ -35,23 +35,19 @@ public class CountryDetailFragment extends Fragment implements LoaderManager.Loa
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        Bundle arguments = getArguments();
-        if (arguments != null) {
-            mCountry = arguments.getParcelable("country");
-        }
-
         View rootView = inflater.inflate(R.layout.country_detail_fragment, container, false);
 
         ImageView flag = (ImageView) rootView.findViewById(R.id.detail_country_flag);
-        flag.setImageResource(mCountry.flag);
         TextView name = (TextView) rootView.findViewById(R.id.detail_country_name);
-        name.setText(mCountry.name);
 
-//        PriceListAdapter adapter = new PriceListAdapter(getActivity(),null,null);
-//
-//        ExpandableListView expandableListView = (ExpandableListView) rootView.findViewById(R.id.detail_country_exp_list);
+        Bundle arguments = getArguments();
 
-        (new FetchCountryDataTask(getActivity())).execute(mCountry);
+        if (arguments != null) {
+            mCountry = arguments.getParcelable("country");
+            flag.setImageResource(mCountry.flag);
+            name.setText(mCountry.name);
+            (new FetchCountryDataTask(getActivity())).execute(mCountry);
+        }
 
         return rootView;
     }
@@ -61,13 +57,14 @@ public class CountryDetailFragment extends Fragment implements LoaderManager.Loa
         // Inflate the menu; this adds items to the action bar if it is present.
         inflater.inflate(R.menu.country_detail_fragment, menu);
 
-        // Locate MenuItem with ShareActionProvider
-        MenuItem menuItem = menu.findItem(R.id.action_share);
+        if (mCountry != null) {
+            // Locate MenuItem with ShareActionProvider
+            MenuItem menuItem = menu.findItem(R.id.action_share);
 
-        // Fetch and store ShareActionProvider
-        mShareActionProvider =  (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
-        mShareActionProvider.setShareIntent(createShareIntent());
-
+            // Fetch and store ShareActionProvider
+            mShareActionProvider =  (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
+            mShareActionProvider.setShareIntent(createShareIntent());
+        }
     }
 
     private Intent createShareIntent() {

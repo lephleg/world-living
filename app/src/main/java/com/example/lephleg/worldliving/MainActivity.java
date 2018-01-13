@@ -13,7 +13,7 @@ import com.example.lephleg.worldliving.data.Country;
 public class MainActivity extends AppCompatActivity implements CountryListFragment.Callback {
 
     private boolean mTwoPane;
-
+    private static final String DETAILFRAGMENT_TAG = "DFTAG";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +27,11 @@ public class MainActivity extends AppCompatActivity implements CountryListFragme
             // In two-pane mode, show the detail view in this activity by
             // adding or replacing the detail fragment using a
             // fragment transaction.
-            // TODO
+            if (savedInstanceState == null) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.living_detail_container, new CountryDetailFragment(), DETAILFRAGMENT_TAG)
+                        .commit();
+            }
         } else {
             mTwoPane = false;
         }
@@ -55,10 +59,15 @@ public class MainActivity extends AppCompatActivity implements CountryListFragme
     @Override
     public void onItemSelected(Country countrySelected) {
         if (mTwoPane) {
-            // In two-pane mode, show the detail view in this activity by
-            // adding or replacing the detail fragment using a
-            // fragment transaction.
-            // TODO
+            Bundle args = new Bundle();
+            args.putParcelable("country", countrySelected);
+
+            CountryDetailFragment fragment = new CountryDetailFragment();
+            fragment.setArguments(args);
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.living_detail_container, fragment, DETAILFRAGMENT_TAG)
+                    .commit();
         } else {
             Intent intent = new Intent(this, DetailActivity.class);
             intent.putExtra("country", countrySelected);
