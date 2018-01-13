@@ -25,7 +25,7 @@ import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 public class FetchCountryDataTask extends AsyncTask<Country, Void, String[]> {
@@ -34,7 +34,7 @@ public class FetchCountryDataTask extends AsyncTask<Country, Void, String[]> {
     private WeakReference<Activity> mActivity;
     private ExpandableListAdapter mAdapter;
     private List<String> listDataHeader;
-    private HashMap<String, List<PriceItem>> listDataChild = new HashMap<String, List<PriceItem>>();
+    private LinkedHashMap<String, List<PriceItem>> listDataChild = new LinkedHashMap<String, List<PriceItem>>();
     private ProgressDialog dialog;
 
 
