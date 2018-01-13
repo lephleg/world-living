@@ -66,8 +66,9 @@ public class PriceListAdapter extends BaseExpandableListAdapter {
 
         TextView priceListChild = (TextView) convertView
                 .findViewById(R.id.price_item_price);
-        // TODO: format price based on currency selected
-        priceListChild.setText(String.valueOf(child.avgPrice));
+
+        // TODO use preferred currency instead of USD
+        priceListChild.setText(String.format(context.getResources().getString(R.string.usd_price), child.avgPrice));
 
         return convertView;
     }

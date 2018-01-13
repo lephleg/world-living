@@ -1,4 +1,5 @@
-<resources>
+<resources xmlns:xliff="http://schemas.android.com/apk/res-auto">
+
     <string name="app_name">World Living</string>
     <string name="action_search">Search</string>
     <string name="action_search_hint">Search for a country or country code&#8230;</string>
@@ -15,5 +16,9 @@
     <string name="leisure_item_group_label">Leisure</string>
     <string name="rent_item_group_label">Rent</string>
     <string name="earnings_item_group_label">Earnings</string>
+
+    <string name="usd_price" translatable="false">$<xliff:g id="price">%1.2f</xliff:g></string>
+    <string name="eur_price" translatable="false">€<xliff:g id="price">%1.2f</xliff:g></string>
+    <string name="gbp_price" translatable="false">£<xliff:g id="price">%1.2f</xliff:g></string>
 
 </resources>

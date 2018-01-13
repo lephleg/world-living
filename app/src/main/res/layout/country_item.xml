@@ -7,10 +7,10 @@
 
     <ImageView
         android:id="@+id/country_icon"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_marginLeft="10dp"
-        android:padding="10dp" />
+        android:padding="5dp" />
 
     <TextView
         android:id="@+id/country_name"

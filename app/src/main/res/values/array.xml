@@ -4,11 +4,19 @@
     <string-array name="pref_currency_entries">
         <item>Euro</item>
         <item>United States Dollar</item>
+        <item>Great Britain Pound</item>
     </string-array>
 
     <string-array name="pref_currency_values">
         <item>EUR</item>
         <item>USD</item>
+        <item>GBP</item>
+    </string-array>
+
+    <string-array name="pref_currency_symbols">
+        <item>€</item>
+        <item>$</item>
+        <item>£</item>
     </string-array>
 
     <string-array name="country_names">
