@@ -1,11 +1,14 @@
 package com.example.lephleg.worldliving;
 
 import android.app.Fragment;
+import android.app.SearchManager;
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -49,6 +52,29 @@ public class CountryListFragment extends Fragment implements LoaderManager.Loade
     }
 
     @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+
+        SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+        searchView.setQueryHint(getResources().getString(R.string.search_hint));
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+
+                listAdapter.getFilter().filter(newText);
+
+                return false;
+            }
+        });
+    }
+
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
@@ -66,7 +92,7 @@ public class CountryListFragment extends Fragment implements LoaderManager.Loade
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
 
-                Country countrySelected = (Country) adapterView.getItemAtPosition(position);
+                Country countrySelected = listAdapter.getItem(position);
                 ((Callback) getActivity())
                         .onItemSelected(countrySelected);
 
