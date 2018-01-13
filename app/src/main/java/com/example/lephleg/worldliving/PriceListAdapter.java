@@ -1,7 +1,9 @@
 package com.example.lephleg.worldliving;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -67,8 +69,20 @@ public class PriceListAdapter extends BaseExpandableListAdapter {
         TextView priceListChild = (TextView) convertView
                 .findViewById(R.id.price_item_price);
 
-        // TODO use preferred currency instead of USD
-        priceListChild.setText(String.format(context.getResources().getString(R.string.usd_price), child.avgPrice));
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String currencyKey = prefs.getString(context.getString(R.string.pref_currency_key),
+                context.getString(R.string.usd_key));
+
+        int priceSymbol = R.string.usd_price;
+
+        if (currencyKey.equals(context.getString(R.string.eur_key))) {
+            priceSymbol = R.string.eur_price;
+        }
+        if (currencyKey.equals(context.getString(R.string.gbp_key))) {
+            priceSymbol = R.string.gbp_price;
+        }
+
+        priceListChild.setText(String.format(context.getResources().getString(priceSymbol), child.avgPrice));
 
         return convertView;
     }

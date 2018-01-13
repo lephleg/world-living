@@ -2,9 +2,11 @@ package com.example.lephleg.worldliving;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
@@ -63,10 +65,13 @@ public class FetchCountryDataTask extends AsyncTask<Country, Void, String[]> {
         // Will contain the raw JSON response as a string.
         String dataJsonStr = null;
 
+        Activity activity = mActivity.get();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
+
         String apiKey = BuildConfig.NUMBEO_API_KEY;
         Country country = params[0];
-        // TODO: Fetch currency from preferences
-        String currency = "USD";
+        String currency = prefs.getString(activity.getString(R.string.pref_currency_key),
+                activity.getString(R.string.pref_currency_default_key));
 
         try {
 
