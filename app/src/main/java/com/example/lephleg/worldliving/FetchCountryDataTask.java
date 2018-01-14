@@ -208,7 +208,7 @@ public class FetchCountryDataTask extends AsyncTask<Country, Void, Void> {
             // format values to be injected to expandable list
             formatPriceItems(items);
 
-            // cash prices in database
+            // cache prices in database
             storePrices(items);
 
         } catch (Exception e) {
