@@ -13,8 +13,8 @@ import android.util.Log;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 
-import com.example.lephleg.worldliving.data.Country;
-import com.example.lephleg.worldliving.data.PriceItem;
+import com.example.lephleg.worldliving.model.Country;
+import com.example.lephleg.worldliving.model.PriceItem;
 import com.example.lephleg.worldliving.data.PricesContract;
 
 import org.json.JSONArray;
@@ -28,10 +28,8 @@ import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Vector;
 
 public class FetchCountryDataTask extends AsyncTask<Country, Void, Void> {
 

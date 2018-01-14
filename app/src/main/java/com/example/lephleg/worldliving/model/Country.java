@@ -1,4 +1,4 @@
-package com.example.lephleg.worldliving.data;
+package com.example.lephleg.worldliving.model;
 
 import android.content.Context;
 import android.content.res.Resources;

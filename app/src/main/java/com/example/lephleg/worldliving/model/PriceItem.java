@@ -1,4 +1,6 @@
-package com.example.lephleg.worldliving.data;
+package com.example.lephleg.worldliving.model;
+
+import com.example.lephleg.worldliving.data.PricesContract;
 
 public class PriceItem {
 

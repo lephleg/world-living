@@ -12,7 +12,7 @@ import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.lephleg.worldliving.data.Country;
+import com.example.lephleg.worldliving.model.Country;
 
 import java.util.ArrayList;
 

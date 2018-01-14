@@ -1,10 +1,6 @@
 package com.example.lephleg.worldliving;
 
 import android.app.Fragment;
-import android.app.SearchManager;
-import android.content.Context;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -18,7 +14,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.example.lephleg.worldliving.data.Country;
+import com.example.lephleg.worldliving.model.Country;
 
 import java.util.ArrayList;
 
