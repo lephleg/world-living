@@ -34,6 +34,7 @@
 
     <string name="share_text">Hey! I\'m checking cost of living for <xliff:g id="country">%s</xliff:g> with World Living app!</string>
 
+    <string name="sync_account_type">lephleg.example.com</string>
     <string name="content_authority">com.example.lephleg.worldliving</string>
 
 </resources>
