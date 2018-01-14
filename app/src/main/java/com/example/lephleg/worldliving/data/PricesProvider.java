@@ -35,6 +35,7 @@ public class PricesProvider extends ContentProvider {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
         final String authority = PricesContract.CONTENT_AUTHORITY;
         matcher.addURI(authority, PricesContract.PATH_PRICES + "/*/*", PRICES_WITH_COUNTRY_AND_CURRENCY);
+        matcher.addURI(authority, PricesContract.PATH_PRICES, PRICES);
         return matcher;
     }
 

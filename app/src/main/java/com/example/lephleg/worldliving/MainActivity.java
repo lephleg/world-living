@@ -8,6 +8,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.example.lephleg.worldliving.model.Country;
+import com.example.lephleg.worldliving.sync.SyncAdapter;
 
 public class MainActivity extends AppCompatActivity implements CountryListFragment.Callback {
 
@@ -34,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements CountryListFragme
         } else {
             mTwoPane = false;
         }
+        SyncAdapter.initializeSyncAdapter(this);
     }
 
     @Override
