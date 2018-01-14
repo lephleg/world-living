@@ -58,4 +58,14 @@ public class PriceItem {
         return null;
     }
 
+    public static PriceItem getPriceItemByColumnName(String dbColumn) {
+
+        for (PriceItem i : ITEMS_LISTED) {
+            if (dbColumn.equals(i.dbColumn)) {
+                return i;
+            }
+        }
+        return null;
+    }
+
 }
