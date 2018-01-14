@@ -15,6 +15,7 @@ public class PricesProvider extends ContentProvider {
     private PricesDbHelper mOpenHelper;
 
     static final int PRICES_WITH_COUNTRY_AND_CURRENCY = 100;
+    static final int PRICES = 101;
 
     private static final SQLiteQueryBuilder sPricesByCountryQueryBuilder;
 
@@ -54,6 +55,18 @@ public class PricesProvider extends ContentProvider {
                 retCursor = getPricesByCountryAndCurrency(uri, strings, s1);
                 break;
             }
+            case PRICES:
+            {
+                retCursor = sPricesByCountryQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+                        strings,
+                        s,
+                        strings1,
+                        null,
+                        null,
+                        s1
+                );
+                break;
+            }
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -81,6 +94,8 @@ public class PricesProvider extends ContentProvider {
         switch (match) {
             case PRICES_WITH_COUNTRY_AND_CURRENCY:
                 return PricesContract.PricesEntry.CONTENT_ITEM_TYPE;
+            case PRICES:
+                return PricesContract.PricesEntry.CONTENT_TYPE;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -151,4 +166,31 @@ public class PricesProvider extends ContentProvider {
         }
         return rowsUpdated;
     }
+
+    @Override
+    public int bulkInsert(Uri uri, ContentValues[] values) {
+        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        final int match = sUriMatcher.match(uri);
+        switch (match) {
+            case PRICES:
+                db.beginTransaction();
+                int returnCount = 0;
+                try {
+                    for (ContentValues value : values) {
+                        long _id = db.insert(PricesContract.PricesEntry.TABLE_NAME, null, value);
+                        if (_id != -1) {
+                            returnCount++;
+                        }
+                    }
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+                getContext().getContentResolver().notifyChange(uri, null);
+                return returnCount;
+            default:
+                return super.bulkInsert(uri, values);
+        }
+    }
+
 }
