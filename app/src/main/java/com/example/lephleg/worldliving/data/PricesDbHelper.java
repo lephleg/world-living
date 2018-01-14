@@ -17,8 +17,8 @@ public class PricesDbHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
 
         final String SQL_CREATE_PRICES_TABLE = "CREATE TABLE " + PricesContract.PricesEntry.TABLE_NAME + " (" +
-                PricesContract.PricesEntry.COLUMN_ID + " INTEGER PRIMARY KEY," +
-                PricesContract.PricesEntry.COLUMN_COUNTRY_CODE + " TEXT UNIQUE NOT NULL, " +
+                PricesContract.PricesEntry.COLUMN_ID + " INTEGER PRIMARY KEY, " +
+                PricesContract.PricesEntry.COLUMN_COUNTRY_CODE + " TEXT NOT NULL, " +
                 PricesContract.PricesEntry.COLUMN_CURRENCY_CODE + " TEXT NOT NULL, " +
                 PricesContract.PricesEntry.COLUMN_MEAL + " REAL, " +
                 PricesContract.PricesEntry.COLUMN_WATER + " REAL, " +
@@ -43,8 +43,8 @@ public class PricesDbHelper extends SQLiteOpenHelper {
                 PricesContract.PricesEntry.COLUMN_RENT_SM_OUT + " REAL, " +
                 PricesContract.PricesEntry.COLUMN_RENT_MD_IN + " REAL, " +
                 PricesContract.PricesEntry.COLUMN_RENT_MD_OUT + " REAL, " +
-                PricesContract.PricesEntry.COLUMN_SALARY + " REAL " +
-                " UNIQUE (" + PricesContract.PricesEntry.COLUMN_COUNTRY_CODE + ", " +
+                PricesContract.PricesEntry.COLUMN_SALARY + " REAL, " +
+                " CONSTRAINT COUNTRY_CURRENCY UNIQUE (" + PricesContract.PricesEntry.COLUMN_COUNTRY_CODE + ", " +
                 PricesContract.PricesEntry.COLUMN_CURRENCY_CODE + ") ON CONFLICT REPLACE);";
 
         sqLiteDatabase.execSQL(SQL_CREATE_PRICES_TABLE);
