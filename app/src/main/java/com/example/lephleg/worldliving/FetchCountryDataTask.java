@@ -64,12 +64,13 @@ public class FetchCountryDataTask extends AsyncTask<Country, Void, Void> {
             return null;
         }
 
-        mCountry = params[0];
         Activity activity = mActivityRef.get();
+        mCountry = params[0];
+        mCurrency = Utilities.getPreferredCurrency(activity);
 
         // check if data already exist in the database
         Cursor cursor = activity.getContentResolver().query(
-                PricesContract.PricesEntry.buildPricesWithCountryAndCurrency(mCountry.code, Utilities.getPreferredCurrency(activity)),
+                PricesContract.PricesEntry.buildPricesWithCountryAndCurrency(mCountry.code, mCurrency),
                 null,
                 null,
                 null,
@@ -77,10 +78,10 @@ public class FetchCountryDataTask extends AsyncTask<Country, Void, Void> {
 
         // if there are not, fetch them now
         if (cursor != null && cursor.getCount() == 0) {
-            Log.d(LOG_TAG, "No data found in database for " + mCountry.name + ". Fetching from the API...");
+            Log.d(LOG_TAG, "No data found in database for " + mCountry.name + " in " + mCurrency + ". Fetching from the API...");
             fetchDataFromApi();
         } else {
-            Log.d(LOG_TAG, "Existing data found for " + mCountry.name + ". Fetching from the database...");
+            Log.d(LOG_TAG, "Existing data found for " + mCountry.name + " in " + mCurrency + ". Fetching from the database...");
             fetchDataFromDatabase(cursor);
         }
         cursor.close();
@@ -229,8 +230,7 @@ public class FetchCountryDataTask extends AsyncTask<Country, Void, Void> {
                     !(cursor.getColumnName(i).equals(PricesContract.PricesEntry.COLUMN_COUNTRY_CODE)) &&
                     !(cursor.getColumnName(i).equals(PricesContract.PricesEntry.COLUMN_CURRENCY_CODE))) {
 
-                Log.d(LOG_TAG, "Analysing column " + cursor.getColumnName(i) + " ...");
-                Log.d(LOG_TAG, "Column value: " + cursor.getDouble(i));
+                Log.d(LOG_TAG, "Column: " + cursor.getColumnName(i) + " -- Value: " + cursor.getDouble(i)); // shows 0.0 for NULL
 
                 // collect only non-null values
                 if (!cursor.isNull(i)) {
@@ -242,7 +242,7 @@ public class FetchCountryDataTask extends AsyncTask<Country, Void, Void> {
                 }
             }
         }
-        Log.d(LOG_TAG, "Total items found: " + items.size());
+        Log.d(LOG_TAG, "Total items collected: " + items.size());
 
         formatPriceItems(items);
 
@@ -325,10 +325,9 @@ public class FetchCountryDataTask extends AsyncTask<Country, Void, Void> {
         // add to database
         if ( priceValues.size() > 2 ) {
             mActivityRef.get().getContentResolver().insert(PricesContract.PricesEntry.buildPricesWithCountryAndCurrency(mCountry.code, mCurrency), priceValues);
-            Log.d(LOG_TAG, "Data for " + mCountry.name + " stored in database successfully!.");
+            Log.d(LOG_TAG, "Data for " + mCountry.name + " stored in database successfully!");
 
-            // delete old data so we don't build up an endless history
-            // TODO
+            // no need to delete old data as they'll always be replaced due to country-currency unique index
         }
 
     }
