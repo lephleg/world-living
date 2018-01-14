@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
-import com.example.lephleg.worldliving.data.PriceItem;
+import com.example.lephleg.worldliving.model.PriceItem;
 
 import java.util.HashMap;
 import java.util.List;

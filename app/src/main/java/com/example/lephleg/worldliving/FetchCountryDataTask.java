@@ -2,8 +2,10 @@ package com.example.lephleg.worldliving;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
@@ -11,8 +13,10 @@ import android.util.Log;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 
-import com.example.lephleg.worldliving.data.Country;
-import com.example.lephleg.worldliving.data.PriceItem;
+import com.example.lephleg.worldliving.model.Country;
+import com.example.lephleg.worldliving.model.PriceItem;
+import com.example.lephleg.worldliving.data.PricesContract;
+import com.example.lephleg.worldliving.sync.SyncAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -28,156 +32,106 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-public class FetchCountryDataTask extends AsyncTask<Country, Void, String[]> {
+public class FetchCountryDataTask extends AsyncTask<Country, Void, Void> {
 
-    private final String LOG_TAG = FetchCountryDataTask.class.getSimpleName();
-    private WeakReference<Activity> mActivity;
+    public final static String LOG_TAG = FetchCountryDataTask.class.getSimpleName();
+    private WeakReference<Activity> mActivityRef;
     private ExpandableListAdapter mAdapter;
     private List<String> listDataHeader;
     private LinkedHashMap<String, List<PriceItem>> listDataChild = new LinkedHashMap<String, List<PriceItem>>();
     private ProgressDialog dialog;
+    private Country mCountry;
+    private String mCurrency;
 
 
     public FetchCountryDataTask(Activity activity) {
-        mActivity = new WeakReference<>(activity);
+        mActivityRef = new WeakReference<>(activity);
         dialog = new ProgressDialog(activity);
     }
 
     @Override
     protected void onPreExecute() {
-        this.dialog.setMessage("Loading data...");
+        this.dialog.setMessage("Fetching data from API...");
         this.dialog.show();
     }
 
     @Override
-    protected String[] doInBackground(Country... params) {
+    protected Void doInBackground(Country... params) {
 
-        // If there's no zip code, there's nothing to look up.  Verify size of params.
+        // verify size of params
         if (params.length == 0) {
             return null;
         }
 
-        // These two need to be declared outside the try/catch
-        // so that they can be closed in the finally block.
-        HttpURLConnection urlConnection = null;
-        BufferedReader reader = null;
+        Activity activity = mActivityRef.get();
+        mCountry = params[0];
+        mCurrency = Utilities.getPreferredCurrency(activity);
 
-        // Will contain the raw JSON response as a string.
-        String dataJsonStr = null;
+        // check if data already exist in the database
+        Cursor cursor = activity.getContentResolver().query(
+                PricesContract.PricesEntry.buildPricesWithCountryAndCurrency(mCountry.code, mCurrency),
+                null,
+                null,
+                null,
+                null);
 
-        Activity activity = mActivity.get();
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
-
-        String apiKey = BuildConfig.NUMBEO_API_KEY;
-        Country country = params[0];
-        String currency = prefs.getString(activity.getString(R.string.pref_currency_key),
-                activity.getString(R.string.pref_currency_default_key));
-
-        try {
-
-            final String API_BASE_URL =
-                    "http://www.numbeo.com:8008/api/country_prices?";
-            final String API_KEY_PARAM = "api_key";
-            final String COUNTRY_PARAM = "country";
-            final String CURRENCY_PARAM = "currency";
-
-            Uri builtUri = Uri.parse(API_BASE_URL).buildUpon()
-                    .appendQueryParameter(API_KEY_PARAM, apiKey)
-                    .appendQueryParameter(COUNTRY_PARAM, country.code)
-                    .appendQueryParameter(CURRENCY_PARAM, currency)
-                    .build();
-
-            URL url = new URL(builtUri.toString());
-
-            urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setRequestMethod("GET");
-            urlConnection.connect();
-
-            // Read the input stream into a String
-            InputStream inputStream = urlConnection.getInputStream();
-            StringBuffer buffer = new StringBuffer();
-            if (inputStream == null) {
-                // Nothing to do.
-                return null;
-            }
-            reader = new BufferedReader(new InputStreamReader(inputStream));
-
-            String line;
-            while ((line = reader.readLine()) != null) {
-                // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
-                // But it does make debugging a *lot* easier if you print out the completed
-                // buffer for debugging.
-                buffer.append(line + "\n");
-            }
-
-            if (buffer.length() == 0) {
-                // Stream was empty.  No point in parsing.
-                return null;
-            }
-            dataJsonStr = buffer.toString();
-        } catch (IOException e) {
-            Log.e(LOG_TAG, "Error ", e);
-            // If the code didn't successfully get the weather data, there's no point in attemping
-            // to parse it.
-            return null;
-        } finally {
-            if (urlConnection != null) {
-                urlConnection.disconnect();
-            }
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (final IOException e) {
-                    Log.e(LOG_TAG, "Error closing stream", e);
-                }
-            }
+        // if there are not, fetch them now
+        if (cursor != null && cursor.getCount() == 0) {
+            Log.d(LOG_TAG, "No data found in database for " + mCountry.name + " in " + mCurrency + ". Fetching from the API...");
+            formatPriceItems(SyncAdapter.fetchDataFromApi(activity, mCountry, mCurrency));
+        } else {
+            Log.d(LOG_TAG, "Existing data found for " + mCountry.name + " in " + mCurrency + ". Fetching from the database...");
+            formatPriceItems(fetchDataFromDatabase(cursor));
         }
+        cursor.close();
 
-        try {
-            // Instantiate a JSON object from the request response
-            JSONObject jsonObject = new JSONObject(dataJsonStr);
-            JSONArray priceItems = jsonObject.getJSONArray("prices");
-
-            List<PriceItem> items = new ArrayList<PriceItem>();
-            Log.d(LOG_TAG, "Parsing values for " + country.name + "...");
-
-            for (int i = 0; i < priceItems.length(); i++) {
-
-                JSONObject item = priceItems.getJSONObject(i);
-                int itemId = item.getInt("item_id");
-
-                PriceItem itemListed = PriceItem.getPriceItemById(itemId);
-
-                if (itemListed != null) {
-                    itemListed.avgPrice = item.getDouble("average_price");
-                    items.add(itemListed);
-//                    Log.d(LOG_TAG, "Item found: " + itemListed.name + " - " + itemListed.avgPrice);
-                }
-            }
-            Log.d(LOG_TAG, "Total items found: " + items.size());
-
-            formatPriceItems(items);
-
-        } catch (Exception e) {
-            Log.e(LOG_TAG, "Error parsing json object", e);
-        }
-
-        // This will only happen if there was an error getting or parsing the forecast.
         return null;
     }
 
     @Override
-    protected void onPostExecute(String[] strings) {
+    protected void onPostExecute(Void aVoid) {
 
-        mAdapter = new PriceListAdapter(mActivity.get(), listDataHeader, listDataChild);
+        Activity activity = mActivityRef.get();
 
-        ExpandableListView expListView = (ExpandableListView) mActivity.get().findViewById(R.id.detail_country_exp_list);
+        mAdapter = new PriceListAdapter(activity, listDataHeader, listDataChild);
+
+        ExpandableListView expListView = (ExpandableListView) activity.findViewById(R.id.detail_country_exp_list);
         expListView.setAdapter(mAdapter);
 
         // dismiss the dialog
         if (dialog.isShowing()) {
             dialog.dismiss();
         }
+
+    }
+
+    private ArrayList<PriceItem> fetchDataFromDatabase(Cursor cursor) {
+
+        ArrayList<PriceItem> items = new ArrayList<PriceItem>();
+
+        cursor.moveToFirst();
+        for (int i = 0; i < cursor.getColumnCount(); i++)
+        {
+            // handle only price items
+            if (!(cursor.getColumnName(i).equals(PricesContract.PricesEntry.COLUMN_ID)) &&
+                    !(cursor.getColumnName(i).equals(PricesContract.PricesEntry.COLUMN_COUNTRY_CODE)) &&
+                    !(cursor.getColumnName(i).equals(PricesContract.PricesEntry.COLUMN_CURRENCY_CODE))) {
+
+                Log.d(LOG_TAG, "Column: " + cursor.getColumnName(i) + " -- Value: " + cursor.getDouble(i)); // shows 0.0 for NULL
+
+                // collect only non-null values
+                if (!cursor.isNull(i)) {
+                    PriceItem itemListed = PriceItem.getPriceItemByColumnName(cursor.getColumnName(i));
+                    if (itemListed != null) {
+                        itemListed.avgPrice = cursor.getDouble(i);
+                        items.add(itemListed);
+                    }
+                }
+            }
+        }
+        Log.d(LOG_TAG, "Total items collected: " + items.size());
+
+        return items;
 
     }
 
@@ -217,7 +171,7 @@ public class FetchCountryDataTask extends AsyncTask<Country, Void, String[]> {
             }
         }
 
-        Resources resources = mActivity.get().getResources();
+        Resources resources = mActivityRef.get().getResources();
 
         if (restaurants.size() > 0) {
             listDataChild.put(resources.getString(R.string.restaurants_item_group_label), restaurants);
@@ -243,4 +197,5 @@ public class FetchCountryDataTask extends AsyncTask<Country, Void, String[]> {
 
         listDataHeader = new ArrayList<String>(listDataChild.keySet());
     }
+
 }

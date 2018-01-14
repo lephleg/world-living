@@ -1,4 +1,4 @@
-package com.example.lephleg.worldliving.data;
+package com.example.lephleg.worldliving.model;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -41,8 +41,7 @@ public class Country implements Parcelable{
         }
     }
 
-    public static ArrayList<Country> getAllCountries(Context context)
-    {
+    public static ArrayList<Country> getAllCountries(Context context) {
         Resources resources = context.getResources();
 
         TypedArray countryNames = resources.obtainTypedArray(R.array.country_names);
@@ -61,6 +60,17 @@ public class Country implements Parcelable{
         countryCodes.recycle();
 
         return countries;
+    }
+
+    public static Country getByCode(Context context, String code) {
+        ArrayList<Country> countries = Country.getAllCountries(context);
+
+        for (Country c : countries) {
+            if (c.code.equals(code)) {
+                return c;
+            }
+        }
+        return null;
     }
 
     @Override

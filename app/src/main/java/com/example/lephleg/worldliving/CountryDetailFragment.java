@@ -18,7 +18,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.lephleg.worldliving.data.Country;
+import com.example.lephleg.worldliving.model.Country;
 
 public class CountryDetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Country> {
 
