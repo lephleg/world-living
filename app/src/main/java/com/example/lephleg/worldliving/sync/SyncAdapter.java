@@ -43,9 +43,8 @@ import java.util.Map.Entry;
 public class SyncAdapter extends AbstractThreadedSyncAdapter {
     public static final String LOG_TAG = SyncAdapter.class.getSimpleName();
 
-    // 60 seconds (1 minute) * 60 minutes (1 hour) * 24 = 1 day
-//    public static final int SYNC_INTERVAL = 60 * 60 * 24;
-    public static final int SYNC_INTERVAL = 60;
+    // 60 seconds (1 minute) * 60 minutes (1 hour) * 24 * 3= 3 days
+    public static final int SYNC_INTERVAL = 60 * 60 * 24 * 3;
     public static final int SYNC_FLEXTIME = SYNC_INTERVAL/6;
 
     private Context mContext;
